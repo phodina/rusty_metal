@@ -1,3 +1,7 @@
+use volatile::Volatile;
+use core::fmt;
+use core::fmt::Write;
+
 #[allow(dead_code)]
 #[repr(u8)]
 pub enum Color {
@@ -39,7 +43,7 @@ const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
 struct Buffer {
-    chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT],
+    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
 use core::ptr::Unique;
@@ -63,10 +67,10 @@ impl Writer {
                 let col = self.column_position;
 
                 let color_code = self.color_code;
-                self.buffer().chars[row][col] = ScreenChar {
+                self.buffer().chars[row][col].write(ScreenChar {
                     ascii_character: byte,
                     color_code: color_code,
-                };
+                });
                 self.column_position += 1;
             }
         }
@@ -77,6 +81,22 @@ impl Writer {
     }
 
     fn new_line(&mut self) {/* TODO */}
+
+    pub fn write_str(&mut self, s: &str) {
+    for byte in s.bytes() {
+      self.write_byte(byte)
+    }
+    }
+
+}
+
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        for byte in s.bytes() {
+          self.write_byte(byte)
+        }
+        Ok(())
+    }
 }
 
 pub fn print_something() {
@@ -86,5 +106,8 @@ pub fn print_something() {
         buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
     };
 
-    writer.write_byte(b'a');
+    writer.write_byte(b'H');
+    writer.write_str("ello! ");
+    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0).unwrap();
+    
 }

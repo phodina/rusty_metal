@@ -1,6 +1,7 @@
 #![feature(lang_items, const_fn, ptr_internals)]
 #![no_std]
 extern crate rlibc;
+extern crate volatile;
 
 mod vga;
 
