@@ -14,8 +14,8 @@ pub extern "C" fn rust_main() {
 
     // ATTENTION: we have a very small stack and no guard page
     vga::clear_screen();
-    println!("Hello World{}", "!");
-    println!("This message is written in Rust!");
+
+    println!("{}", { println!("inner"); "outer" });
     
     loop{}
 }
