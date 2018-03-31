@@ -1,5 +1,5 @@
 *~
-multiboot_header
+build
 /target/
 **/*.rs.bk
 Cargo.lock
