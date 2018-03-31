@@ -7,3 +7,4 @@ authors = ["Petr Hodina <hodinapetr46@gmail.com>"]
 crate-type = ["staticlib"]
 
 [dependencies]
+rlibc = "1.0"
