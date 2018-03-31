@@ -2,6 +2,19 @@ use volatile::Volatile;
 use core::fmt;
 use spin::Mutex;
 
+macro_rules! println {
+    ($fmt:expr) => (print!(concat!($fmt, "\n")));
+    ($fmt:expr, $($arg:tt)*) => (print!(concat!($fmt, "\n"), $($arg)*));
+}
+
+macro_rules! print {
+    ($($arg:tt)*) => ({
+        use core::fmt::Write;
+        let mut writer = $crate::vga::WRITER.lock();
+        writer.write_fmt(format_args!($($arg)*)).unwrap();
+    });
+}
+
 #[allow(dead_code)]
 #[repr(u8)]
 pub enum Color {
@@ -124,3 +137,9 @@ pub static WRITER: Mutex<Writer> = Mutex::new(Writer {
     color_code: ColorCode::new(Color::LightGreen, Color::Black),
     buffer: unsafe { Unique::new_unchecked(0xb8000 as *mut _) },
 });
+
+pub fn clear_screen() {
+    for _ in 0..BUFFER_HEIGHT {
+        println!("");
+    }
+}

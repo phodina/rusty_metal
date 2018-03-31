@@ -6,13 +6,16 @@ extern crate spin;
 
 use core::fmt::Write;
 
+#[macro_use]
 mod vga;
 
 #[no_mangle]
 pub extern "C" fn rust_main() {
 
-    vga::WRITER.lock().write_str("Hello again\n\n");
-    write!(vga::WRITER.lock(), ", some numbers: {} {}", 42, 1.337).unwrap();
+    // ATTENTION: we have a very small stack and no guard page
+    vga::clear_screen();
+    println!("Hello World{}", "!");
+    println!("This message is written in Rust!");
     
     loop{}
 }
