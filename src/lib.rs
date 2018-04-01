@@ -4,6 +4,8 @@ extern crate rlibc;
 extern crate volatile;
 extern crate spin;
 extern crate multiboot2;
+#[macro_use]
+extern crate bitflags;
 
 use multiboot2::{BootInformation, MemoryMapTag, ElfSectionsTag};
 
@@ -39,8 +41,6 @@ pub extern "C" fn rust_main(multiboot_information_address: usize) {
             break;
         }
     }
-
-    //println!("Frame: {:?}", frame_allocator.allocate_frame());
     
     println!("Kernel start: 0x{:x} end: 0x{:x}", kernel_start, kernel_end);
     println!("Multiboot start: 0x{:x} end: 0x{:x}", multiboot_start, multiboot_end);
