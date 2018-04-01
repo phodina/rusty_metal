@@ -13,8 +13,14 @@ mod vga;
 #[no_mangle]
 pub extern "C" fn rust_main(multiboot_information_address: usize) {
 
-    // ATTENTION: we have a very small stack and no guard page
     vga::clear_screen();
+    
+    print_sections(multiboot_information_address);
+    
+    loop{}
+}
+
+fn print_sections(multiboot_information_address: usize) {
 
     let boot_info = unsafe{ multiboot2::load(multiboot_information_address) };
     let memory_map_tag = boot_info.memory_map_tag()
@@ -25,8 +31,15 @@ pub extern "C" fn rust_main(multiboot_information_address: usize) {
         println!("    start: 0x{:x}, length: 0x{:x}",
                  area.base_addr, area.length);
     }
-    
-    loop{}
+
+    let elf_sections_tag = boot_info.elf_sections_tag()
+        .expect("Elf-sections tag required");    
+    println!("kernel sections:");
+
+    for section in elf_sections_tag.sections() {
+        println!("    addr: 0x{:x}, size: 0x{:x}, flags: 0x{:x}",
+                 section.addr, section.size, section.flags);
+    }
 }
 
 #[lang = "eh_personality"]
